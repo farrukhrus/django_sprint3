@@ -9,8 +9,8 @@ class PublishedModel(models.Model):
     )
     created_at = models.DateTimeField("Добавлено", auto_now_add=True)
 
-    def __str__(self):
-        return self.title
-
     class Meta:
         abstract = True
+
+    def __str__(self):
+        return self.title
