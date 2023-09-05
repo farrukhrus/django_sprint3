@@ -9,6 +9,7 @@ def index(request):
     post_list = (
         Post.objects
         .select_related("author", "location", "category")
+        # check ./chat.txt
         .filter(
             pub_date__lte=timezone.now(),
             is_published=True,
