@@ -8,9 +8,9 @@ MAX_POSTS = 5
 
 def get_posts():
     return Post.objects.select_related().filter(
-            pub_date__lte=timezone.now(),
-            is_published=True,
-            category__is_published=True,
+        pub_date__lte=timezone.now(),
+        is_published=True,
+        category__is_published=True,
     )
 
 
