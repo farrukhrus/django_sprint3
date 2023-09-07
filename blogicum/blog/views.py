@@ -3,19 +3,22 @@ from django.shortcuts import render, get_object_or_404
 
 from blog.models import Post, Category
 
+MAX_POSTS = 5
+
+
+def get_posts():
+    return Post.objects.select_related().filter(
+            pub_date__lte=timezone.now(),
+            is_published=True,
+            category__is_published=True,
+    )
+
 
 def index(request):
     template = "blog/index.html"
     post_list = (
-        Post.objects
-        .select_related("author", "location", "category")
-        # check ./chat.txt
-        .filter(
-            pub_date__lte=timezone.now(),
-            is_published=True,
-            category__is_published=True,
-        )
-        .order_by("-pub_date")[:5]
+        get_posts()
+        .order_by("-pub_date")[:MAX_POSTS]
     )
     context = {"post_list": post_list}
     return render(request, template, context)
@@ -26,11 +29,7 @@ def category_posts(request, category_slug):
     category = get_object_or_404(
         Category, slug=category_slug, is_published=True
     )
-    post_list = Post.objects.filter(
-        pub_date__lte=timezone.now(),
-        is_published=True,
-        category=category
-    )
+    post_list = get_posts()
     context = {"category": category, "post_list": post_list}
     return render(request, template, context)
 
@@ -38,12 +37,7 @@ def category_posts(request, category_slug):
 def post_detail(request, pk):
     template = "blog/detail.html"
     post = get_object_or_404(
-        Post.objects.select_related().filter(
-            pk=pk,
-            pub_date__lte=timezone.now(),
-            is_published=True,
-            category__is_published=True,
-        )
+        get_posts().filter(pk=pk)
     )
     context = {"post": post}
     return render(request, template, context)
